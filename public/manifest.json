@@ -19,7 +19,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "fullscreen",
   "theme_color": "#282c34",
   "description": "PWA Example by A. Alchangyan",
