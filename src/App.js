@@ -1,10 +1,11 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-const delay = 2;
+const delay = 10;
 
 function App() {
+  const [error, setError] = useState(null);
   /**
    * Possible values for permission
    * - default
@@ -13,31 +14,45 @@ function App() {
    */
   const permission = Notification.permission;
 
-  const handleCLick = useCallback(() => {
-    setTimeout(() => {
-      new Notification("Hi there!");
-    }, delay * 1000);
-  }, []);
+  const sendNotification = () => {
+    console.log("notification requested");
+    try {
+      const notification = new Notification("Hi there!");
+      console.log(notification);
+    } catch (err) {
+      setError(err);
+    }
+  };
 
   useEffect(() => {
-    if (["default", "denied"].includes(permission)) {
-      Notification.requestPermission().then((result) => {
-        console.log(result);
-      });
+    try {
+      if (["default", "denied"].includes(permission)) {
+        Notification.requestPermission().then((result) => {});
+      } else {
+        let counter = 0;
+
+        const interval = setInterval(() => {
+          sendNotification();
+          counter++;
+
+          if (counter === 5) {
+            clearInterval(interval);
+          }
+        }, delay * 1000);
+      }
+    } catch (err) {
+      setError(err);
     }
   }, [permission]);
 
   return (
     <div className="App">
       <header className="App-header">
+        {error && <span>Error: {error}</span>}
         <img src={logo} className="App-logo" alt="logo" />
         <p>React PWA Example</p>
         <ul>
           <li>PUSH API Permission: {permission}</li>
-          <li>
-            Send test notification({delay}s delay):{" "}
-            <button onClick={handleCLick}>Send</button>
-          </li>
         </ul>
       </header>
     </div>
